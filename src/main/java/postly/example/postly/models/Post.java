@@ -3,13 +3,13 @@ package postly.example.postly.models;
 public class Post {
     private int id;
     private String username;
-    private String post;
+    private String text;
     private int likes;
 
-    public Post(int id, String username, String thread, int likes) {
+    public Post(int id, String username, String text, int likes) {
         this.id = id;
         this.username = username;
-        this.post = thread;
+        this.text = text;
         this.likes = likes;
     }
 
@@ -22,7 +22,7 @@ public class Post {
     }
 
     public String getPost() {
-        return post;
+        return text;
     }
 
     public int getLikes() {
@@ -37,8 +37,8 @@ public class Post {
         this.username = username;
     }
 
-    public void setPost(String post) {
-        this.post = post;
+    public void setPost(String text) {
+        this.text = text;
     }
 
     public void setLikes(int likes) {
