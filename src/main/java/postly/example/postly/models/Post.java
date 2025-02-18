@@ -6,10 +6,10 @@ public class Post {
     private String post;
     private int likes;
 
-    public Post(int id, String username, String post, int likes) {
+    public Post(int id, String username, String thread, int likes) {
         this.id = id;
         this.username = username;
-        this.post = post;
+        this.post = thread;
         this.likes = likes;
     }
 
@@ -30,7 +30,7 @@ public class Post {
     }
 
     public void setId(int id) {
-         this.id = id;
+        this.id = id;
     }
 
     public void setUsername(String username) {

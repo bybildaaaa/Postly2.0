@@ -1,9 +1,9 @@
 package postly.example.postly.services;
 
-import org.springframework.stereotype.Service;
-import postly.example.postly.models.Post;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Service;
+import postly.example.postly.models.Post;
 
 @Service
 public class PostService {
