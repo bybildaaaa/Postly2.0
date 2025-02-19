@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import postly.example.postly.models.Post;
 import postly.example.postly.services.PostService;
 
-@RestController
-@RequestMapping("/posts")
+@RestController //сообщает о том, что класс Rest Api
+@RequestMapping("/posts") //базовый путь для всех эндпоинтов
 public class PostController {
 
     private final PostService postService;
@@ -21,7 +21,7 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping
+    @GetMapping// берёт параметры из URL
     public List<Post> getAllPosts() {
         return postService.getAllPosts();
     }
