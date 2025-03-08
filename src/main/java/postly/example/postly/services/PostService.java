@@ -2,7 +2,10 @@ package postly.example.postly.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import postly.example.postly.models.Post;
 
 @Service
@@ -21,14 +24,20 @@ public class PostService {
 
     public Post getPostById(int id) {
         return posts.stream()
-                .filter(post -> post.getId() == id)
-                .findFirst()
-                .orElse(null);
+          .filter(post -> post.getId() == id)
+          .findFirst()
+          .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
     }
 
     public List<Post> getPostsByUsername(String username) {
-        return posts.stream()
-                .filter(post -> post.getUsername().equalsIgnoreCase(username))
-                .toList();
+        List<Post> filteredPosts = posts.stream()
+            .filter(post -> post.getUsername().equalsIgnoreCase(username))
+            .collect(Collectors.toList());
+
+        if (filteredPosts.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No posts found for user: " + username);
+        }
+
+        return filteredPosts;
     }
 }
