@@ -8,6 +8,7 @@ import postly.example.postly.models.Post;
 import postly.example.postly.models.User;
 import postly.example.postly.repositories.PostRepository;
 import postly.example.postly.repositories.UserRepository;
+import postly.example.postly.util.ErrorMessages;
 
 @Service
 public class PostService {
@@ -24,7 +25,7 @@ public class PostService {
     public Post createPost(String username, String text) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            throw new ResourceNotFoundException("User not found");
+            throw new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND);
         }
 
         Post post = new Post();
@@ -37,7 +38,7 @@ public class PostService {
 
     public void deletePost(int postId) {
         if (!postRepository.existsById(postId)) {
-            throw new ResourceNotFoundException("Post not found");
+            throw new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND);
         }
         postRepository.deleteById(postId);
     }
@@ -48,34 +49,33 @@ public class PostService {
 
     public Post getPostById(int id) {
         return postRepository.findById(id)
-          .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+          .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND));
     }
 
     public void likePost(int postId, String username) {
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND));
 
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            throw new ResourceNotFoundException("User not found");
+            throw new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND);
         }
 
-        // Проверяем, лайкал ли уже этот пользователь этот пост
         if (!post.getLikedByUsers().contains(user)) {
             post.getLikedByUsers().add(user);
             post.setLikes(
-                post.getLikedByUsers().size()); // Количество лайков = количеству пользователей
+                post.getLikedByUsers().size());
             postRepository.save(post);
         }
     }
 
     public void unlikePost(int postId, String username) {
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND));
 
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            throw new ResourceNotFoundException("User not found");
+            throw new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND);
         }
 
         if (post.getLikedByUsers().remove(user)) {
@@ -86,7 +86,7 @@ public class PostService {
 
     public List<User> getUsersWhoLikedPost(int postId) {
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND));
 
         return post.getLikedByUsers();
     }
