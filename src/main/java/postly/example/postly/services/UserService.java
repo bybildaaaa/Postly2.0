@@ -3,6 +3,7 @@ package postly.example.postly.services;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import postly.example.postly.exceptions.ResourceNotFoundException;
 import postly.example.postly.exceptions.UserAlreadyExistsException;
 import postly.example.postly.models.Comment;
@@ -71,6 +72,19 @@ public class UserService {
         commentRepository.deleteAll(comments);
 
         userRepository.delete(user);
+    }
+
+    @Transactional
+  public User updateUsername(int userId, String newUsername) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (userRepository.findByUsername(newUsername) != null) {
+            throw new UserAlreadyExistsException("Username already taken");
+        }
+
+        user.setUsername(newUsername);
+        return userRepository.save(user);
     }
 
 }

@@ -22,14 +22,21 @@ public class PostService {
         this.userRepository = userRepository;
     }
 
-    public Post createPost(String username, String text) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND);
+    public int getLikesCount(int postId) {
+        // Проверка существования поста перед подсчётом лайков
+        if (!postRepository.existsById(postId)) {
+            throw new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND);
         }
+        // Подсчёт количества лайков через репозиторий
+        return postRepository.getLikesCount(postId);
+    }
+
+    public Post createPost(int userId, String text) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
 
         Post post = new Post();
-        post.setUsername(username);
+        post.setUsername(user.getUsername());
         post.setPost(text);
         post.setLikes(0);
 
@@ -52,31 +59,26 @@ public class PostService {
           .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND));
     }
 
-    public void likePost(int postId, String username) {
+    public void likePost(int postId, int userId) {
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND));
 
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND);
-        }
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
 
         if (!post.getLikedByUsers().contains(user)) {
             post.getLikedByUsers().add(user);
-            post.setLikes(
-                post.getLikedByUsers().size());
+            post.setLikes(post.getLikedByUsers().size());
             postRepository.save(post);
         }
     }
 
-    public void unlikePost(int postId, String username) {
+    public void unlikePost(int postId, int userId) {
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND));
 
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND);
-        }
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
 
         if (post.getLikedByUsers().remove(user)) {
             post.setLikes(post.getLikedByUsers().size());
@@ -91,11 +93,10 @@ public class PostService {
         return post.getLikedByUsers();
     }
 
-    public List<Post> getPostsByUsername(String username) {
-        List<Post> posts = postRepository.findByUsername(username);
-        if (posts.isEmpty()) {
-            throw new ResourceNotFoundException("No posts found for user: " + username);
-        }
-        return posts;
+    public List<Post> getPostsByUserId(int userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
+
+        return postRepository.findByUsername(user.getUsername());
     }
 }

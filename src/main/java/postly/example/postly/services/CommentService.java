@@ -35,16 +35,14 @@ public class CommentService {
         return comments;
     }
 
-    public Comment addCommentToPost(int postId, String username, String text) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new ResourceNotFoundException("User not found: " + username);
-        }
+    public Comment addCommentToPost(int postId, int userId, String text) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
-        Comment comment = new Comment(username, text, post);
+        Comment comment = new Comment(user.getUsername(), text, post);
         return commentRepository.save(comment);
     }
 

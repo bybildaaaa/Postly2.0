@@ -32,8 +32,8 @@ public class CommentController {
     @PostMapping("/{postId}")
     @ResponseStatus(HttpStatus.CREATED)
     public Comment addComment(
-        @PathVariable int postId, @RequestParam String username, @RequestParam String text) {
-        return commentService.addCommentToPost(postId, username, text);
+        @PathVariable int postId, @RequestParam int userId, @RequestParam String text) {
+        return commentService.addCommentToPost(postId, userId, text);
     }
 
     @DeleteMapping("/{commentId}")

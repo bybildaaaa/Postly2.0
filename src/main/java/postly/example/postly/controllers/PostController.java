@@ -29,10 +29,20 @@ public class PostController {
         this.postService = postService;
     }
 
+    @GetMapping("/{postId}/likes/count")
+    public ResponseEntity<Integer> getLikesCount(@PathVariable int postId) {
+        try {
+            int likesCount = postService.getLikesCount(postId);
+            return ResponseEntity.ok(likesCount);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Post createPost(@RequestParam String username, @RequestParam String text) {
-        return postService.createPost(username, text);
+    public Post createPost(@RequestParam int userId, @RequestParam String text) {
+        return postService.createPost(userId, text);
     }
 
     @DeleteMapping("/{postId}")
@@ -53,15 +63,15 @@ public class PostController {
 
     @PostMapping("/{postId}/like")
     public ResponseEntity<String> likePost(
-        @PathVariable int postId, @RequestParam String username) {
-        postService.likePost(postId, username);
+        @PathVariable int postId, @RequestParam int userId) {
+        postService.likePost(postId, userId);
         return ResponseEntity.ok("Post liked successfully");
     }
 
     @DeleteMapping("/{postId}/like")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unlikePost(@PathVariable int postId, @RequestParam String username) {
-        postService.unlikePost(postId, username);
+    public void unlikePost(@PathVariable int postId, @RequestParam int userId) {
+        postService.unlikePost(postId, userId);
     }
 
     @GetMapping("/{postId}/likes")
@@ -69,9 +79,9 @@ public class PostController {
         return postService.getUsersWhoLikedPost(postId);
     }
 
-    @GetMapping(params = "username")
-    public List<Post> getPostsByUsername(@RequestParam String username) {
-        return postService.getPostsByUsername(username);
+    @GetMapping(params = "userId")
+    public List<Post> getPostsByUserId(@RequestParam int userId) {
+        return postService.getPostsByUserId(userId);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
