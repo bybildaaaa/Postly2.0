@@ -11,6 +11,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,12 +34,12 @@ public class Post {
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @JsonIgnore
-    private List<User> likedByUsers;
+    private List<User> likedByUsers = new ArrayList<>();
 
     public Post() {
     }
 
-    public Post(int id, String username, String text, int likes) {
+    public Post(int id, String username, String text) {
         this.id = id;
         this.username = username;
         this.text = text;

@@ -12,6 +12,7 @@ import postly.example.postly.models.User;
 import postly.example.postly.repositories.CommentRepository;
 import postly.example.postly.repositories.PostRepository;
 import postly.example.postly.repositories.UserRepository;
+import postly.example.postly.util.ErrorMessages;
 
 @Service
 public class UserService {
@@ -36,7 +37,7 @@ public class UserService {
 
     public User getUserById(int userId) {
         return userRepository.findById(userId)
-      .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+      .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
     }
 
     public User createUser(String username) {
@@ -51,7 +52,7 @@ public class UserService {
 
     public void deleteUser(int userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
 
         List<Post> postsLikedByUser = postRepository.findAll()
             .stream()
@@ -76,7 +77,7 @@ public class UserService {
     @Transactional
   public User updateUsername(int userId, String newUsername) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
 
         if (userRepository.findByUsername(newUsername) != null) {
             throw new UserAlreadyExistsException("Username already taken");
