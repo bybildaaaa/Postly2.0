@@ -21,7 +21,6 @@ public class Post {
     private int id;
     private String username;
     private String text;
-    private int likes;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -43,7 +42,6 @@ public class Post {
         this.id = id;
         this.username = username;
         this.text = text;
-        this.likes = likes;
     }
 
     public int getId() {
@@ -58,10 +56,6 @@ public class Post {
         return text;
     }
 
-    public int getLikes() {
-        return likes;
-    }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -72,10 +66,6 @@ public class Post {
 
     public void setPost(String text) {
         this.text = text;
-    }
-
-    public void setLikes(int likes) {
-        this.likes = likes;
     }
 
     public List<User> getLikedByUsers() {

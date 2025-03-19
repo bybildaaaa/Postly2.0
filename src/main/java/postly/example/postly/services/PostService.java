@@ -22,12 +22,18 @@ public class PostService {
         this.userRepository = userRepository;
     }
 
+    public List<Post> getPostsByUsername(String username) {
+        return postRepository.findPostsByUsername(username);
+    }
+
+    public List<Post> getPostsByMinLikes(int likesCount) {
+        return postRepository.findPostsByMinLikes(likesCount);
+    }
+
     public int getLikesCount(int postId) {
-        // Проверка существования поста перед подсчётом лайков
         if (!postRepository.existsById(postId)) {
             throw new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND);
         }
-        // Подсчёт количества лайков через репозиторий
         return postRepository.getLikesCount(postId);
     }
 
@@ -38,7 +44,6 @@ public class PostService {
         Post post = new Post();
         post.setUsername(user.getUsername());
         post.setPost(text);
-        post.setLikes(0);
 
         return postRepository.save(post);
     }
@@ -61,27 +66,25 @@ public class PostService {
 
     public void likePost(int postId, int userId) {
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND));
+            .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!post.getLikedByUsers().contains(user)) {
             post.getLikedByUsers().add(user);
-            post.setLikes(post.getLikedByUsers().size());
             postRepository.save(post);
         }
     }
 
     public void unlikePost(int postId, int userId) {
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.POST_NOT_FOUND));
+            .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (post.getLikedByUsers().remove(user)) {
-            post.setLikes(post.getLikedByUsers().size());
             postRepository.save(post);
         }
     }

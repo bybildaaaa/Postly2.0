@@ -84,6 +84,16 @@ public class PostController {
         return postService.getPostsByUserId(userId);
     }
 
+    @GetMapping("/filter/username")
+    public List<Post> getPostsByUsername(@RequestParam String username) {
+        return postService.getPostsByUsername(username);
+    }
+
+    @GetMapping("/filter/min-likes")
+    public List<Post> getPostsByMinLikes(@RequestParam int likesCount) {
+        return postService.getPostsByMinLikes(likesCount);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleResourceNotFoundException(ResourceNotFoundException ex) {

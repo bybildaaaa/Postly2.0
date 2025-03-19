@@ -60,7 +60,6 @@ public class UserService {
 
         for (Post post : postsLikedByUser) {
             post.getLikedByUsers().remove(user);
-            post.setLikes(post.getLikedByUsers().size());
             postRepository.save(post);
         }
 

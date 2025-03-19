@@ -11,4 +11,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT COUNT(pl) FROM Post p JOIN p.likedByUsers pl WHERE p.id = :postId")
     int getLikesCount(@Param("postId") int postId);
+
+    @Query("SELECT p FROM Post p WHERE p.username = :username")
+    List<Post> findPostsByUsername(@Param("username") String username);
+
+    @Query("SELECT p FROM Post p WHERE SIZE(p.likedByUsers) >= :likesCount")
+    List<Post> findPostsByMinLikes(@Param("likesCount") int likesCount);
 }
