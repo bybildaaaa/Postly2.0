@@ -126,4 +126,5 @@ public class PostService {
 
         return postRepository.findByUsername(user.getUsername());
     }
+
 }

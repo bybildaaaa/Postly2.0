@@ -1,9 +1,12 @@
 package postly.example.postly.services;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postly.example.postly.cashe.CacheService;
 import postly.example.postly.exceptions.ResourceNotFoundException;
 import postly.example.postly.exceptions.UserAlreadyExistsException;
 import postly.example.postly.models.Comment;
@@ -17,18 +20,24 @@ import postly.example.postly.util.ErrorMessages;
 @Service
 public class UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final CacheService<Integer, Post> cacheService;
+
+
 
     @Autowired
   public UserService(
         UserRepository userRepository,
         PostRepository postRepository,
-        CommentRepository commentRepository) {
+        CommentRepository commentRepository,
+        CacheService<Integer, Post> cacheService) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.cacheService = cacheService;
     }
 
     public List<User> getAllUsers() {
@@ -77,14 +86,37 @@ public class UserService {
     @Transactional
   public User updateUsername(int userId, String newUsername) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (userRepository.findByUsername(newUsername) != null) {
-            throw new UserAlreadyExistsException("Username already taken");
+        String oldUsername = user.getUsername();
+        user.setUsername(newUsername);
+        userRepository.save(user);
+
+        updatePostsAndComments(oldUsername, newUsername);
+
+        return user;
+    }
+
+    private void updatePostsAndComments(String oldUsername, String newUsername) {
+        List<Post> posts = postRepository.findPostsByUsername(oldUsername);
+        for (Post post : posts) {
+            post.setUsername(newUsername);
+            postRepository.save(post);
+
+            if (cacheService.get(post.getId()) != null) {
+                cacheService.put(post.getId(), post);
+            }
         }
 
-        user.setUsername(newUsername);
-        return userRepository.save(user);
+        List<Comment> comments = commentRepository.findAll().stream()
+            .filter(c -> c.getUsername().equals(oldUsername))
+            .toList();
+        for (Comment comment : comments) {
+            comment.setUsername(newUsername);
+            commentRepository.save(comment);
+        }
+
+        logger.info("Updated username '{}' to '{}'", oldUsername, newUsername);
     }
 
 }

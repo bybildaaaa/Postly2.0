@@ -9,8 +9,12 @@ import postly.example.postly.models.Post;
 
 @RestController
 public class CacheController {
+    private final CacheService<Integer, Post> cacheService;
+
     @Autowired
-  private CacheService<Integer, Post> cacheService;
+    public CacheController(CacheService<Integer, Post> cacheService) {
+        this.cacheService = cacheService;
+    }
 
     @GetMapping("/cache/contents")
   public Map<Integer, Post> getCacheContents() {

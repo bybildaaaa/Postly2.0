@@ -6,14 +6,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CacheService<K, V> {
-    private final int MaxCacheSize = 3;
+    private static final int MAX_CACHE_SIZE = 3;
     private final Map<K, V> cache;
 
     public CacheService() {
-        this.cache = new LinkedHashMap<>(MaxCacheSize, 0.75f, true) {
+        this.cache = new LinkedHashMap<>(MAX_CACHE_SIZE, 0.75f, true) {
             @Override
       protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-                return size() > MaxCacheSize;
+                return size() > MAX_CACHE_SIZE;
             }
         };
     }
@@ -35,6 +35,6 @@ public class CacheService<K, V> {
     }
 
     public synchronized Map<K, V> getCacheContents() {
-        return new LinkedHashMap<>(cache);  // Возвращаем копию текущего состояния кэша
+        return new LinkedHashMap<>(cache);
     }
 }

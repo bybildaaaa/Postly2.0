@@ -18,7 +18,7 @@ public class User {
   private int id;
     private String username;
 
-    @ManyToMany(mappedBy = "likedByUsers", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "likedByUsers", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnore
   private List<Post> likedPosts;
 
