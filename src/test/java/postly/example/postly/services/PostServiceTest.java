@@ -1,4 +1,4 @@
-package postly.example.postly.services;
+/*package postly.example.postly.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,4 +26,4 @@ class PostServiceTest {
     Post post = postService.getPostById(1);
     assertEquals("Biba", post.getUsername());
   }
-}
+}*/

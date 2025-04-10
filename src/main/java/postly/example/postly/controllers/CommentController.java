@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import postly.example.postly.exceptions.InvalidRequestException;
 import postly.example.postly.models.Comment;
 import postly.example.postly.services.CommentService;
 
@@ -26,6 +27,9 @@ public class CommentController {
 
     @GetMapping(params = "postId")
     public List<Comment> getCommentsByPostId(@RequestParam int postId) {
+        if (postId <= 0) {
+            throw new InvalidRequestException("Invalid post ID");
+        }
         return commentService.getCommentsByPostId(postId);
     }
 
@@ -33,13 +37,18 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public Comment addComment(
         @PathVariable int postId, @RequestParam int userId, @RequestParam String text) {
+        if (postId <= 0 || userId <= 0 || text.isBlank()) {
+            throw new InvalidRequestException("Invalid input data");
+        }
         return commentService.addCommentToPost(postId, userId, text);
     }
 
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteComment(@PathVariable int commentId) {
+        if (commentId <= 0) {
+            throw new InvalidRequestException("Invalid comment ID");
+        }
         commentService.deleteComment(commentId);
     }
-
 }

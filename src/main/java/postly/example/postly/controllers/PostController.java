@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import postly.example.postly.exceptions.InvalidRequestException;
 import postly.example.postly.exceptions.ResourceNotFoundException;
 import postly.example.postly.models.Post;
 import postly.example.postly.models.User;
@@ -30,18 +31,19 @@ public class PostController {
     }
 
     @GetMapping("/{postId}/likes/count")
-    public ResponseEntity<Integer> getLikesCount(@PathVariable int postId) {
-        try {
-            int likesCount = postService.getLikesCount(postId);
-            return ResponseEntity.ok(likesCount);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    public int getLikesCount(@PathVariable int postId) {
+        if (postId <= 0) {
+            throw new InvalidRequestException("Invalid post ID");
         }
+        return postService.getLikesCount(postId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Post createPost(@RequestParam int userId, @RequestParam String text) {
+        if (userId <= 0 || text.isBlank()) {
+            throw new InvalidRequestException("Invalid input data");
+        }
         return postService.createPost(userId, text);
     }
 
@@ -62,8 +64,10 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/like")
-    public ResponseEntity<String> likePost(
-        @PathVariable int postId, @RequestParam int userId) {
+    public ResponseEntity<String> likePost(@PathVariable int postId, @RequestParam int userId) {
+        if (postId <= 0 || userId <= 0) {
+            throw new InvalidRequestException("Invalid input data");
+        }
         postService.likePost(postId, userId);
         return ResponseEntity.ok("Post liked successfully");
     }
@@ -99,4 +103,5 @@ public class PostController {
     public String handleResourceNotFoundException(ResourceNotFoundException ex) {
         return ex.getMessage();
     }
+
 }

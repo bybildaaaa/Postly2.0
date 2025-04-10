@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import postly.example.postly.exceptions.InvalidRequestException;
 import postly.example.postly.models.User;
 import postly.example.postly.services.UserService;
 
@@ -34,28 +35,36 @@ public class UserController {
 
     @GetMapping("/{userId}")
   public User getUserById(@PathVariable int userId) {
+        if (userId <= 0) {
+            throw new InvalidRequestException("Invalid user ID");
+        }
         return userService.getUserById(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
   public User createUser(@RequestParam String username) {
+        if (username.isBlank()) {
+            throw new InvalidRequestException("Username cannot be empty");
+        }
         return userService.createUser(username);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteUser(@PathVariable int userId) {
+        if (userId <= 0) {
+            throw new InvalidRequestException("Invalid user ID");
+        }
         userService.deleteUser(userId);
     }
 
     @PatchMapping("/{userId}/{newUsername}")
-  public ResponseEntity<User> updateUsername(
-        @PathVariable int userId,
-        @PathVariable String newUsername) {
-
+  public ResponseEntity<User> updateUsername(@PathVariable int userId, @PathVariable String newUsername) {
+        if (userId <= 0 || newUsername.isBlank()) {
+            throw new InvalidRequestException("Invalid input data");
+        }
         User updatedUser = userService.updateUsername(userId, newUsername);
         return ResponseEntity.ok(updatedUser);
     }
-
 }
