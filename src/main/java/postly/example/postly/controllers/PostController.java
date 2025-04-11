@@ -1,5 +1,7 @@
 package postly.example.postly.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import postly.example.postly.services.PostService;
 
 @RestController
 @RequestMapping("/posts")
+@Tag(name = "Посты", description = "Операции с постами")
 public class PostController {
 
     private final PostService postService;
@@ -53,12 +56,15 @@ public class PostController {
         postService.deletePost(postId);
     }
 
-    @GetMapping// берёт параметры из URL
+    @GetMapping
+    @Operation(summary = "Получить все посты", description = "Возвращает список всех постов")
     public List<Post> getAllPosts() {
         return postService.getAllPosts();
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Получить пост по ID",
+        description = "Возвращает пост по его уникальному идентификатору")
     public Post getPostById(@PathVariable int id) {
         return postService.getPostById(id);
     }
