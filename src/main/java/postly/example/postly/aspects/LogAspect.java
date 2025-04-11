@@ -19,11 +19,11 @@ public class LogAspect {
     private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
-    @Pointcut("execution(* postly.example.postly.controllers..*(..)) || execution"
-        + "(* postly.example.postly.services..*(..))")
-  public void applicationMethod() {}
+    @Pointcut("within(postly.example.postly.controllers..*)")
+  public void controllerMethods() {}
 
-    @Before("applicationMethod()")
+
+    @Before("controllerMethods()")
   public void logBefore(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
         Object[] args = joinPoint.getArgs();
@@ -36,7 +36,7 @@ public class LogAspect {
         logger.info(message);
     }
 
-    @AfterThrowing(pointcut = "applicationMethod()", throwing = "exception")
+    @AfterThrowing(pointcut = "controllerMethods()", throwing = "exception")
   public void logError(JoinPoint joinPoint, Exception exception) {
         String methodName = joinPoint.getSignature().getName();
         String timestamp = dateFormat.format(new Date());
