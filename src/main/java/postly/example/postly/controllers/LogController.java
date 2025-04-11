@@ -1,5 +1,7 @@
 package postly.example.postly.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Tag(name = "Логи", description = "Просмотр логов приложения")
 public class LogController {
 
     private static final String LOG_FILE_PATH = "application.log";
 
     @GetMapping("/logs")
+    @Operation(summary = "Получить логи", description = "Возвращает строки логов из файла. Можно указать дату в формате dd-MM-yyyy для фильтрации.")
   public List<String> getLogsForDate(@RequestParam(required = false) String date) {
         List<String> logs = new ArrayList<>();
 

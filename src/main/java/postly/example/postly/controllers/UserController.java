@@ -1,12 +1,14 @@
 package postly.example.postly.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org. springframework. web. bind. annotation. PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,7 @@ import postly.example.postly.services.UserService;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "Пользователи", description = "Операции с пользователями")
 public class UserController {
 
     private final UserService userService;
@@ -29,11 +32,15 @@ public class UserController {
     }
 
     @GetMapping
+    @Operation(summary = "Получить всех пользователей",
+        description = "Возвращает список всех зарегистрированных пользователей")
   public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{userId}")
+    @Operation(summary = "Получить пользователя по ID",
+        description = "Возвращает пользователя по его уникальному идентификатору")
   public User getUserById(@PathVariable int userId) {
         if (userId <= 0) {
             throw new InvalidRequestException("Invalid user ID");
@@ -43,7 +50,9 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-  public User createUser(@RequestParam String username) {
+    @Operation(summary = "Создать нового пользователя",
+        description = "Создаёт нового пользователя с указанным именем")
+    public User createUser(@RequestParam String username) {
         if (username.isBlank()) {
             throw new InvalidRequestException("Username cannot be empty");
         }
@@ -52,7 +61,8 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteUser(@PathVariable int userId) {
+    @Operation(summary = "Удалить пользователя", description = "Удаляет пользователя по его ID")
+    public void deleteUser(@PathVariable int userId) {
         if (userId <= 0) {
             throw new InvalidRequestException("Invalid user ID");
         }
@@ -60,7 +70,10 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}/{newUsername}")
-  public ResponseEntity<User> updateUsername(@PathVariable int userId, @PathVariable String newUsername) {
+    @Operation(summary = "Обновить имя пользователя",
+        description = "Обновляет имя пользователя по ID на новое значение")
+    public ResponseEntity<User> updateUsername(@PathVariable int userId,
+                                               @PathVariable String newUsername) {
         if (userId <= 0 || newUsername.isBlank()) {
             throw new InvalidRequestException("Invalid input data");
         }

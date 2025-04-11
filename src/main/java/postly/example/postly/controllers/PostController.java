@@ -6,15 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import postly.example.postly.exceptions.InvalidRequestException;
 import postly.example.postly.exceptions.ResourceNotFoundException;
 import postly.example.postly.models.Post;
@@ -34,6 +26,7 @@ public class PostController {
     }
 
     @GetMapping("/{postId}/likes/count")
+    @Operation(summary = "Получить количество лайков поста", description = "Возвращает общее количество лайков для указанного поста по его ID")
     public int getLikesCount(@PathVariable int postId) {
         if (postId <= 0) {
             throw new InvalidRequestException("Invalid post ID");
@@ -43,6 +36,7 @@ public class PostController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Создать новый пост", description = "Создаёт новый пост от имени пользователя с заданным текстом")
     public Post createPost(@RequestParam int userId, @RequestParam String text) {
         if (userId <= 0 || text.isBlank()) {
             throw new InvalidRequestException("Invalid input data");
@@ -52,6 +46,7 @@ public class PostController {
 
     @DeleteMapping("/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Удалить пост", description = "Удаляет пост по его ID")
     public void deletePost(@PathVariable int postId) {
         postService.deletePost(postId);
     }
@@ -63,13 +58,13 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Получить пост по ID",
-        description = "Возвращает пост по его уникальному идентификатору")
+    @Operation(summary = "Получить пост по ID", description = "Возвращает пост по его уникальному идентификатору")
     public Post getPostById(@PathVariable int id) {
         return postService.getPostById(id);
     }
 
     @PostMapping("/{postId}/like")
+    @Operation(summary = "Поставить лайк посту", description = "Добавляет лайк к посту от указанного пользователя")
     public ResponseEntity<String> likePost(@PathVariable int postId, @RequestParam int userId) {
         if (postId <= 0 || userId <= 0) {
             throw new InvalidRequestException("Invalid input data");
@@ -80,26 +75,31 @@ public class PostController {
 
     @DeleteMapping("/{postId}/like")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Убрать лайк с поста", description = "Удаляет лайк от пользователя с указанного поста")
     public void unlikePost(@PathVariable int postId, @RequestParam int userId) {
         postService.unlikePost(postId, userId);
     }
 
     @GetMapping("/{postId}/likes")
+    @Operation(summary = "Получить пользователей, лайкнувших пост", description = "Возвращает список пользователей, которые поставили лайк указанному посту")
     public List<User> getUsersWhoLikedPost(@PathVariable int postId) {
         return postService.getUsersWhoLikedPost(postId);
     }
 
     @GetMapping(params = "userId")
+    @Operation(summary = "Получить посты пользователя по ID", description = "Возвращает список постов, созданных пользователем с указанным ID")
     public List<Post> getPostsByUserId(@RequestParam int userId) {
         return postService.getPostsByUserId(userId);
     }
 
     @GetMapping("/filter/username")
+    @Operation(summary = "Получить посты по имени пользователя", description = "Возвращает список постов, созданных пользователем с указанным именем")
     public List<Post> getPostsByUsername(@RequestParam String username) {
         return postService.getPostsByUsername(username);
     }
 
     @GetMapping("/filter/min-likes")
+    @Operation(summary = "Получить посты с минимальным количеством лайков", description = "Возвращает список постов, у которых количество лайков больше или равно указанному значению")
     public List<Post> getPostsByMinLikes(@RequestParam int likesCount) {
         return postService.getPostsByMinLikes(likesCount);
     }
@@ -109,5 +109,4 @@ public class PostController {
     public String handleResourceNotFoundException(ResourceNotFoundException ex) {
         return ex.getMessage();
     }
-
 }
