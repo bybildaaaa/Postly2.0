@@ -12,6 +12,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import postly.example.postly.exceptions.InvalidRequestException;
 
 @Aspect
 @Component
@@ -41,9 +42,15 @@ public class LogAspect {
         String methodName = joinPoint.getSignature().getName();
         String timestamp = dateFormat.format(new Date());
 
-        String message = String.format("%s ERROR: Ошибка в методе %s: %s", timestamp,
-            methodName, exception.getMessage());
-        logger.error(message);
+        if (exception instanceof InvalidRequestException) {
+            String message = String.format("%s ERROR: Ошибка 400 в методе %s: %s",
+                  timestamp, methodName, exception.getMessage());
+            logger.error(message);
+        } else {
+            String message = String.format("%s ERROR: Ошибка в методе %s: %s",
+                  timestamp, methodName, exception.getMessage());
+            logger.error(message);
+        }
     }
 
     @PostConstruct
