@@ -127,4 +127,9 @@ public class PostService {
         return postRepository.findByUsername(user.getUsername());
     }
 
+    public Post save(Post post) {
+        return postRepository.save(post);
+    }
+
+
 }
