@@ -1,9 +1,9 @@
 package postly.example.postly.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io. swagger. v3.oas. annotations. Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -138,11 +138,22 @@ public class PostController {
         return ex.getMessage();
     }
 
-    @PostMapping("/posts/bulk")
-    public ResponseEntity<List<Post>> createPosts(@RequestBody List<Post> posts) {
-        List<Post> savedPosts = posts.stream()
-            .map(postService::save)
-            .collect(Collectors.toList());
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedPosts);
+    @PostMapping("/bulk")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Создать несколько постов",
+        description = "Создаёт несколько новых постов от имени пользователя с заданными текстами")
+    public List<Post> createPostsBulk(
+        @Parameter(description = "ID пользователя", required = true)
+        @RequestParam int userId,
+
+        @Parameter(description = "Список текстов для постов", required = true)
+        @RequestBody List<String> texts) {
+
+        if (userId <= 0 || texts == null || texts.isEmpty()) {
+            throw new InvalidRequestException("Invalid input data");
+        }
+
+        return postService.createPostsBulk(userId, texts);
     }
+
 }

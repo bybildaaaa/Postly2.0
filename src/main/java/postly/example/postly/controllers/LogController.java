@@ -19,7 +19,9 @@ public class LogController {
     private static final String LOG_FILE_PATH = "application.log";
 
     @GetMapping("/logs")
-    @Operation(summary = "Получить логи", description = "Возвращает строки логов из файла. Можно указать дату в формате dd-MM-yyyy для фильтрации.")
+    @Operation(summary = "Получить логи",
+        description = "Возвращает строки логов из файла. "
+          + "Можно указать дату в формате dd-MM-yyyy для фильтрации.")
   public List<String> getLogsForDate(@RequestParam(required = false) String date) {
         List<String> logs = new ArrayList<>();
 

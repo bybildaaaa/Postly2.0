@@ -1,11 +1,13 @@
 package postly.example.postly.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import postly.example.postly.cashe.CacheService;
+import postly.example.postly.exceptions.InvalidRequestException;
 import postly.example.postly.exceptions.ResourceNotFoundException;
 import postly.example.postly.models.Post;
 import postly.example.postly.models.User;
@@ -131,5 +133,27 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    public List<Post> createPostsBulk(int userId, List<String> texts) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new InvalidRequestException("Пользователь с id "
+              + userId + " не найден"));
+
+        List<Post> posts = texts.stream()
+            .filter(text -> !text.isBlank())
+            .map(text -> {
+                Post post = new Post();
+                post.setUsername(user.getUsername());
+                post.setPost(text);
+                return post;
+            })
+            .collect(Collectors.toList());
+        List<Post> savedPosts = postRepository.saveAll(posts);
+        savedPosts.forEach(post -> {
+            cacheService.put(post.getId(), post);
+            logger.info("New post created and cached: postId={}", post.getId());
+        });
+
+        return savedPosts;
+    }
 
 }
