@@ -150,7 +150,7 @@ public class PostService {
         List<Post> savedPosts = postRepository.saveAll(posts);
         savedPosts.forEach(post -> {
             cacheService.put(post.getId(), post);
-            logger.info("New post created and cached: postId={}", post.getId());
+            logger.info("New post created and cached with postId={}", post.getId());
         });
 
         return savedPosts;
