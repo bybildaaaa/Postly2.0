@@ -119,4 +119,8 @@ public class UserService {
         logger.info("Updated username '{}' to '{}'", oldUsername, newUsername);
     }
 
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
 }

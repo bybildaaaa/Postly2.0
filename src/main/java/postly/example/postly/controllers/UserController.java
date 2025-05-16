@@ -80,4 +80,18 @@ public class UserController {
         User updatedUser = userService.updateUsername(userId, newUsername);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @PostMapping("/login")
+    @Operation(summary = "Вход по имени пользователя",
+        description = "Возвращает пользователя по имени, если он существует")
+  public ResponseEntity<User> login(@RequestParam String username) {
+        if (username.isBlank()) {
+            throw new InvalidRequestException("Username cannot be empty");
+        }
+        User user = userService.getUserByUsername(username);
+        if (user == null) {
+            throw new InvalidRequestException("User not found");
+        }
+        return ResponseEntity.ok(user);
+    }
 }
