@@ -3,16 +3,15 @@ import { TextField, Button, Box } from '@mui/material';
 import axios from 'axios';
 
 const PostForm = ({ refresh }) => {
-    const [content, setContent] = useState('');
-    const username = localStorage.getItem('user');
+    const [postText, setPostText] = useState(''); // Переименовано для ясности
+    const userId = localStorage.getItem('userId');
 
     const handleSubmit = () => {
-        if (!content.trim()) return;
+        if (!postText.trim()) return;
 
-        const userId = localStorage.getItem('userId');
         const params = new URLSearchParams();
         params.append("userId", userId);
-        params.append("text", content);
+        params.append("text", postText); // Используем "text" как в бэкенде
 
         axios.post('http://localhost:8080/posts', params, {
             headers: {
@@ -20,7 +19,7 @@ const PostForm = ({ refresh }) => {
             }
         })
             .then(() => {
-                setContent('');
+                setPostText('');
                 refresh?.();
             })
             .catch(console.error);
@@ -32,8 +31,8 @@ const PostForm = ({ refresh }) => {
                 label="Что у вас нового?"
                 multiline
                 fullWidth
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
+                value={postText}
+                onChange={(e) => setPostText(e.target.value)}
             />
             <Button variant="contained" sx={{ mt: 1 }} onClick={handleSubmit}>
                 Опубликовать

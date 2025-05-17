@@ -1,6 +1,7 @@
 package postly.example.postly.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -75,5 +76,10 @@ public class Post {
 
     public void setLikedByUsers(List<User> likedByUsers) {
         this.likedByUsers = likedByUsers;
+    }
+
+    @JsonProperty("likesCount")
+    public int getLikesCount() {
+        return likedByUsers != null ? likedByUsers.size() : 0;
     }
 }

@@ -156,4 +156,10 @@ public class PostController {
         return postService.createPostsBulk(userId, texts);
     }
 
+    @GetMapping("/{postId}/liked")
+    public boolean isPostLikedByUser(@PathVariable int postId, @RequestParam int userId) {
+        Post post = postService.getPostById(postId);
+        return post.getLikedByUsers().stream().anyMatch(user -> user.getId() == userId);
+    }
+
 }
